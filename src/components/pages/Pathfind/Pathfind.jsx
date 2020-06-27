@@ -22,7 +22,7 @@ export default class PathFind extends Component {
     this.brush = {
       type: 'wall',
       color: 'black',
-      brushDict: { empty: 'white', wall: 'black', start: 'green', finish: 'red' },
+      brushDict: { empty: 'white', wall: 'black', start: '#20e82a', finish: 'red' },
       setType: function (typeName) {
         this.type = typeName;
         this.color = this.brushDict[typeName];
@@ -47,6 +47,8 @@ export default class PathFind extends Component {
     this.canvasNodeGroup = undefined;
     this.needInitCanvas = true;
     this.onMouseDownNodeType = '';
+    this.mouseDownOnce = false;
+    this.onDrawAlgo = false;
     this.specialNodesProps = {
       startRow: -1,
       startCol: -1,
@@ -103,6 +105,8 @@ export default class PathFind extends Component {
       finishCol: -1,
       hasStart: false,
       hasFinish: false,
+      lastRow: -1,
+      lastCol: -1,
     };
   };
 
@@ -123,7 +127,10 @@ export default class PathFind extends Component {
       this.onMouseDownNodeType = '';
       this.specialNodesProps.onDragSpecial = false;
     }
-    console.log(this.onMouseDownNodeType + ' ' + this.specialNodesProps.onDragSpecial);
+    // console.log(this.onMouseDownNodeType + ' ' + this.specialNodesProps.onDragSpecial);
+    if (this.isCoorsChange(currentRow, currentCol)) {
+      this.mouseDownOnce = true;
+    }
 
     this.onMouseDrag(event);
   };
@@ -172,7 +179,41 @@ export default class PathFind extends Component {
     if (this.onMouseDownNodeType === 'start' || this.onMouseDownNodeType === 'finish') {
       specialNodesProps.onDragSpecial = true;
     }
-    console.log(this.onMouseDownNodeType + ' ' + this.specialNodesProps.onDragSpecial);
+    // console.log(this.onMouseDownNodeType + ' ' + this.specialNodesProps.onDragSpecial);
+
+    if (this.specialNodesProps.onDragSpecial) {
+      canDraw = false;
+
+      //   const path = this.canvasNodeGroup.children[`${currentRow}-${currentCol}`];
+      //   path.fillColor = brush.brushDict[this.onMouseDownNodeType];
+      if (this.onMouseDownNodeType === 'start') {
+        const lastNode = this.canvasNodeGroup.children[`${specialNodesProps.startRow}-${specialNodesProps.startCol}`];
+        lastNode.fillColor = brush.brushDict['empty'];
+        if (specialNodesProps.startRow !== currentRow || specialNodesProps.startCol !== currentCol) {
+          this.grid[specialNodesProps.startRow][specialNodesProps.startCol] = 'empty';
+          this.grid[currentRow][currentCol] = 'start';
+
+          specialNodesProps.startRow = currentRow;
+          specialNodesProps.startCol = currentCol;
+          // print Dijkstra
+          if (this.onDrawAlgo) this.printDijkstra();
+        }
+      } else if (this.onMouseDownNodeType === 'finish') {
+        const lastNode = this.canvasNodeGroup.children[`${specialNodesProps.finishRow}-${specialNodesProps.finishCol}`];
+        lastNode.fillColor = brush.brushDict['empty'];
+        if (specialNodesProps.finishRow !== currentRow || specialNodesProps.finishCol !== currentCol) {
+          this.grid[specialNodesProps.finishRow][specialNodesProps.finishCol] = 'empty';
+          this.grid[currentRow][currentCol] = 'finish';
+
+          specialNodesProps.finishRow = currentRow;
+          specialNodesProps.finishCol = currentCol;
+          // print Dijkstra
+          if (this.onDrawAlgo) this.printDijkstra();
+        }
+      }
+      const path = this.canvasNodeGroup.children[`${currentRow}-${currentCol}`];
+      path.fillColor = brush.brushDict[this.onMouseDownNodeType];
+    }
 
     // TODO:
     if (canDraw) {
@@ -188,31 +229,32 @@ export default class PathFind extends Component {
 
       this.grid[currentRow][currentCol] = brush.type;
 
-      //   const gridLineWidth = this.gridLineWidth;
       const path = this.canvasNodeGroup.children[`${currentRow}-${currentCol}`];
       path.fillColor = brush.color;
+      this.animateNode(path);
 
       // TODO: enable animation
-      // const tween = path.tween(
-      //   {
-      //     size: nodeSize + 5,
-      //     fillColor: 'yellow',
-      //   },
-      //   {
-      //     easing: 'easeInOutCubic',
-      //     duration: 200,
-      //   }
-      // );
-      // tween.then(() => {
-      //   // ...tween color back to blue.
-      //   path.tweenTo(
+      //   const gridLineWidth = this.gridLineWidth;
+      //   const tween = path.tween(
       //     {
-      //       size: nodeSize - gridLineWidth,
-      //       fillColor: brush.color,
+      //       size: nodeSize + 5,
+      //       fillColor: 'yellow',
       //     },
-      //     300
+      //     {
+      //       easing: 'easeInOutCubic',
+      //       duration: 200,
+      //     }
       //   );
-      // });
+      //   tween.then(() => {
+      //     // ...tween color back to brush color.
+      //     path.tweenTo(
+      //       {
+      //         size: nodeSize - gridLineWidth,
+      //         fillColor: brush.color,
+      //       },
+      //       300
+      //     );
+      //   });
 
       // const text = new PointText(
       //   new Point(
@@ -224,6 +266,47 @@ export default class PathFind extends Component {
       // text.fillColor = 'black';
       // text.content = 'wall';
     }
+
+    if (this.isCoorsChange(currentRow, currentCol) || this.mouseDownOnce) {
+      this.mouseDownOnce = false;
+      if (this.onDrawAlgo) this.printDijkstra();
+    }
+  };
+
+  isCoorsChange = (currentRow, currentCol) => {
+    const specialNodesProps = this.specialNodesProps;
+    if (specialNodesProps.lastRow !== currentRow || specialNodesProps.lastCol !== currentCol) {
+      specialNodesProps.lastRow = currentRow;
+      specialNodesProps.lastCol = currentCol;
+      console.log('coors change');
+      return true;
+    }
+    return false;
+  };
+
+  animateNode = (path) => {
+    const colorBefore = path.fillColor;
+    path.fillColor = 'yellow';
+    const tween = path.tween(
+      {
+        size: this.state.nodeSize + 5,
+        fillColor: '#fffc4f',
+      },
+      {
+        easing: 'easeInOutCubic',
+        duration: 200,
+      }
+    );
+    tween.then(() => {
+      // ...tween color back to color before.
+      path.tweenTo(
+        {
+          size: this.state.nodeSize - this.gridLineWidth,
+          fillColor: colorBefore,
+        },
+        300
+      );
+    });
   };
 
   handleMouseUp() {
@@ -349,12 +432,18 @@ export default class PathFind extends Component {
         if (
           (node.row !== temp.startRow || node.col !== temp.startCol) &&
           (node.row !== temp.finishRow || node.col !== temp.finishCol)
-        )
-          path.fillColor = '#86C166';
+        ) {
+          path.fillColor = '#d6ff75';
+        }
       });
     } else {
       console.log('nodesInShortestPathOrder is null');
     }
+  };
+
+  animateAlgorithm = () => {
+    this.onDrawAlgo = true;
+    this.printDijkstra();
   };
 
   render() {
@@ -399,7 +488,7 @@ export default class PathFind extends Component {
                     </Button>
                   </ListItem>
                   <ListItem>
-                    <Button variant="outlined" onClick={() => this.printDijkstra()}>
+                    <Button variant="outlined" onClick={() => this.animateAlgorithm()}>
                       Dijk
                     </Button>
                   </ListItem>
