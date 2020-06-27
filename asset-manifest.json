@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/visual-pathfind/static/css/main.5ecd60fb.chunk.css",
-    "main.js": "/visual-pathfind/static/js/main.350fedac.chunk.js",
-    "main.js.map": "/visual-pathfind/static/js/main.350fedac.chunk.js.map",
+    "main.js": "/visual-pathfind/static/js/main.08bf672a.chunk.js",
+    "main.js.map": "/visual-pathfind/static/js/main.08bf672a.chunk.js.map",
     "runtime-main.js": "/visual-pathfind/static/js/runtime-main.336f6c74.js",
     "runtime-main.js.map": "/visual-pathfind/static/js/runtime-main.336f6c74.js.map",
     "static/js/2.4f776cbc.chunk.js": "/visual-pathfind/static/js/2.4f776cbc.chunk.js",
     "static/js/2.4f776cbc.chunk.js.map": "/visual-pathfind/static/js/2.4f776cbc.chunk.js.map",
     "index.html": "/visual-pathfind/index.html",
-    "precache-manifest.c6a2074eae03cdea721b6b0ce9c11668.js": "/visual-pathfind/precache-manifest.c6a2074eae03cdea721b6b0ce9c11668.js",
+    "precache-manifest.0e4caebc3623d7fea5747949f8b322f3.js": "/visual-pathfind/precache-manifest.0e4caebc3623d7fea5747949f8b322f3.js",
     "service-worker.js": "/visual-pathfind/service-worker.js",
     "static/css/main.5ecd60fb.chunk.css.map": "/visual-pathfind/static/css/main.5ecd60fb.chunk.css.map",
     "static/js/2.4f776cbc.chunk.js.LICENSE.txt": "/visual-pathfind/static/js/2.4f776cbc.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.336f6c74.js",
     "static/js/2.4f776cbc.chunk.js",
     "static/css/main.5ecd60fb.chunk.css",
-    "static/js/main.350fedac.chunk.js"
+    "static/js/main.08bf672a.chunk.js"
   ]
 }
