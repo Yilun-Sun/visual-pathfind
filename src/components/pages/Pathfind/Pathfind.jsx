@@ -74,12 +74,13 @@ export default class PathFind extends Component {
       this.resetCanvas();
     };
 
-    if (this.needInitCanvas) {
-      this.grid = this.getInitialNodes();
-      this.getInitialCanvasNodes();
-      this.needInitCanvas = false;
-      console.log('init');
-    }
+    this.resetCanvas();
+    // if (this.needInitCanvas) {
+    //   this.grid = this.getInitialNodes();
+    //   this.getInitialCanvasNodes();
+    //   this.needInitCanvas = false;
+    //   console.log('init');
+    // }
   }
 
   resetCanvas = () => {
@@ -96,25 +97,18 @@ export default class PathFind extends Component {
     // TODO: should save previous state, copy from it
     this.grid = this.getInitialNodes();
     this.getInitialCanvasNodes();
-    this.needInitCanvas = false;
 
-    this.specialNodesProps = {
-      startRow: -1,
-      startCol: -1,
-      finishRow: -1,
-      finishCol: -1,
-      hasStart: false,
-      hasFinish: false,
-      lastRow: -1,
-      lastCol: -1,
-    };
+    this.setUpInitStartFinishNodeInView();
+    this.initStartAndFinishNodeIfHave();
+
+    this.needInitCanvas = false;
   };
 
   onMouseDown = (event) => {
     const currentX = event.point.x;
     const currentY = event.point.y;
-    const canvasWidth = this.canvas.width;
-    const canvasHeight = this.canvas.height;
+    // const canvasWidth = this.canvas.width;
+    // const canvasHeight = this.canvas.height;
     const nodeSize = this.state.nodeSize;
     const currentRow = Math.floor(currentY / nodeSize);
     const currentCol = Math.floor(currentX / nodeSize);
@@ -270,6 +264,66 @@ export default class PathFind extends Component {
     if (this.isCoorsChange(currentRow, currentCol) || this.mouseDownOnce) {
       this.mouseDownOnce = false;
       if (this.onDrawAlgo) this.printDijkstra();
+    }
+  };
+
+  setUpInitStartFinishNodeInView = () => {
+    const canvasWidth = this.canvas.width;
+    const canvasHeight = this.canvas.height;
+    if (canvasWidth > 400 && canvasHeight > 400) {
+      const coors = this.getNodeIndexAtPosition(canvasWidth, canvasHeight);
+      this.specialNodesProps = {
+        startRow: Math.floor(coors[0] / 2),
+        startCol: Math.floor(coors[1] / 3),
+        finishRow: Math.floor(coors[0] / 2),
+        finishCol: Math.floor((2 * coors[1]) / 3),
+        hasStart: true,
+        hasFinish: true,
+      };
+      this.grid[this.specialNodesProps.startRow][this.specialNodesProps.startCol] = 'start';
+      this.grid[this.specialNodesProps.finishRow][this.specialNodesProps.finishCol] = 'finish';
+    } else {
+      this.specialNodesProps = {
+        startRow: -1,
+        startCol: -1,
+        finishRow: -1,
+        finishCol: -1,
+        hasStart: false,
+        hasFinish: false,
+        lastRow: -1,
+        lastCol: -1,
+      };
+    }
+  };
+
+  // TODO:
+  getNodeIndexAtPosition = (posX, posY) => {
+    const canvasWidth = this.canvas.width;
+    const canvasHeight = this.canvas.height;
+    const nodeSize = this.state.nodeSize;
+
+    const row = Math.floor(canvasHeight / nodeSize);
+    const col = Math.floor(canvasWidth / nodeSize);
+    return [row, col];
+  };
+
+  initStartAndFinishNodeIfHave = () => {
+    const hasStart = this.specialNodesProps.hasStart;
+    const hasFinish = this.specialNodesProps.hasFinish;
+    const startRow = this.specialNodesProps.startRow;
+    const startCol = this.specialNodesProps.startCol;
+    const finishRow = this.specialNodesProps.finishRow;
+    const finishCol = this.specialNodesProps.finishCol;
+
+    if (hasStart) {
+      const path = this.canvasNodeGroup.children[`${startRow}-${startCol}`];
+      path.fillColor = this.brush.brushDict['start'];
+      this.grid[startRow][startCol] = 'start';
+    }
+    if (hasFinish) {
+      const path = this.canvasNodeGroup.children[`${finishRow}-${finishCol}`];
+      path.fillColor = this.brush.brushDict['finish'];
+      this.grid[finishRow][finishCol] = 'finish';
     }
   };
 
