@@ -4,11 +4,11 @@ import PathfindPage from '../components/pages/Pathfind/PathfindPage';
 
 const MainRoute = () => (
   <Switch>
-    <Route path="/visual-pathfinder">
+    <Route path="/visual-pathfind">
       <PathfindPage></PathfindPage>
     </Route>
     <Route path="/">
-      <Redirect to="/visual-pathfinder" />
+      <Redirect to="/visual-pathfind" />
     </Route>
   </Switch>
 );
