@@ -1,5 +1,5 @@
 const topNavBarHeight = '64px';
-const leftToolboxWidth = '160px';
+const leftToolboxWidth = '200px';
 
 const toolBoxColor = '#828282';
 const defaultBackgroundColor = '#FCFAF2';

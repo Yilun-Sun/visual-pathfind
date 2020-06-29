@@ -7,12 +7,15 @@ import * as serviceWorker from './serviceWorker';
 import Pathfind from './components/pages/Pathfind/Pathfind'
 
 ReactDOM.render(
-    <React.StrictMode>
-        <Router>
-            <MainRoute />
-        </Router>
-        {/* <Pathfind></Pathfind> */}
-    </React.StrictMode>,
+    // TODO: React.StrictMode
+    // <React.StrictMode>
+    //     <Router>
+    //         <MainRoute />
+    //     </Router>
+    // </React.StrictMode>,
+    <Router>
+        <MainRoute />
+    </Router>,
     document.getElementById('root')
 );
 
